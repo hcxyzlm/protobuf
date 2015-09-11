@@ -1,0 +1,88 @@
+package baijiale;
+
+message Ans_OnEnterGame {
+	repeated Ans_SeatInfo infolist = 1;
+	required int32 tableStatus = 2;
+	repeated ShowPaperInfo PaerInfo=3;
+	repeated ShowPaperInfo SelfShowPaper=4;
+	optional int32 PlayerUserID = 5 [default = -1];
+	optional int32 bankerUserID = 6 [default = -1];
+}
+
+message Ans_SeatInfo {
+	required int32 userID = 1;
+	required int32 seatID = 2;
+	repeated int32 pockers = 3;
+	optional int32 bet = 4;
+  	optional int32 status = 5;
+}
+
+message Ans_SendPoker {
+	repeated int32 Pokers = 1;
+}
+
+
+message Req_SeeingPoker{
+	required int32 seatID =1;
+	repeated PokerCCP pokerccp=2;      //看牌时 背面牌的属性
+}
+message Ans_SeeingPoker{
+	required int32 seatID =1;
+	repeated PokerCCP pokerccp=2;      //看牌时 背面牌的属性
+}
+message PokerCCP{
+	required int32 x=1;         //横坐标位移
+	required int32 y=2;         //纵坐标位移
+	required int32 Visible=3;   //显示背面牌
+}
+
+
+
+message Req_OpenPoker{                     //开牌
+	required int32 seatID =1;
+	
+}
+message Ans_OpenPoker {
+	required int32 seatID= 1;
+	repeated int32 Pokers = 2;
+	required int32 Flat   = 3;          //庄家的还是闲家的
+}
+message Req_Bet {                            //下注请求
+	required int32 seatID = 1;
+	required int32 seleted = 2;
+	required int32 betCount = 3;
+}
+
+message Req_ReBet{                       //重复上局下注请求
+	required int32 seatID = 1;
+}
+
+message Req_ClearBet{                    //清除下注
+	required int32 seatID = 1;
+}
+
+message Ans_PlayerBet{                   //通知所有人 显示某玩家下注筹码
+	required int32 seatID = 1;
+	required int32 bet = 2;
+	required int32 seleted = 3;
+}
+message Ans_ShowPaper{                     //路纸
+    	repeated ShowPaperInfo PaperInfo = 1;
+	repeated ShowPaperInfo MyPaperInfo =2;
+}
+message ShowPaperInfo {
+   	required int32 x = 1;
+ 	required int32 y = 2;
+ 	required int32 Result = 3;
+}
+message Ans_GameResult{
+    repeated ResultInfo retlists = 1;       //结算
+}
+
+message ResultInfo{
+	required int32 userID = 1;
+	required int32 seatID = 2;
+	required int32 betFlat = 3;        
+	required int32 winCount = 4;     
+	required int32 result= 5;
+}

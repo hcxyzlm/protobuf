@@ -1,0 +1,68 @@
+package tutorial;
+
+option java_package = "com.zengame.proto.game.baijiale";
+option java_outer_classname = "game";
+option optimize_for = LITE_RUNTIME;
+
+message Ans_OnEnterGame {
+	repeated Ans_SeatInfo infolist = 1;
+	required int32 tableStatus = 2;
+	required int32 curSpeak = 3;
+	optional int32 bankerUserID = 4 [default = -1];
+}
+
+message Ans_SeatInfo {
+	required int32 userID = 1;
+	required int32 seatID = 2;
+	repeated int32 pockers = 3;
+	optional int32 bet = 4;
+  	optional int32 status = 5;
+}
+
+message Ans_SendPoker {
+	repeated int32 Pokers = 1;
+	required int32 BankerseatID=2;
+	required int32 PlayerSeatID=3;
+}
+
+message Req_SeePoker{
+	required int32 seatID =1;
+	
+}
+message Ans_SeePoker{
+	required int32 seatID = 1;	
+}
+message Ans_OpenPoker {
+	required int32 seatID= 1;
+	repeated int32 Pokers = 2;
+	required int32 Flat   = 3;
+}
+message Req_Bet {
+	required int32 seatID = 1;
+	required int32 seleted = 2;
+	required int32 betCount = 3;
+}
+
+message Req_ReBet{
+	required int32 seatID = 1;
+}
+
+message Req_ClearBet{
+	required int32 seatID = 1;
+}
+
+message Ans_PlayerBet{
+	required int32 seatID = 1;
+	required int32 bet = 2;
+	required int32 seleted = 3;
+}
+
+message Ans_GameResult{
+    repeated ResultInfo retlists = 1;
+}
+
+message ResultInfo{
+	required int32 userID = 1;
+	required int32 win = 2;
+	optional int32 cardtype = 3;
+}

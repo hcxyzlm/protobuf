@@ -1,0 +1,69 @@
+﻿请求结构
+包长(4byte) 包头+包体的长度
+
+包头
+Type[1byte] option[1byte] reserve[2byte]命令ID(4byte) Seq(4byte) 
+
+包体
+Data(byte[*])可变长
+
+注解:
+Type://1- 请求,Client->Server 
+		 //2- 正常回应,Server->Client
+		 //3- 错误回应,消息body为通用错误返回包
+
+#获取自己的话费(100001)----------------------------------100001
+请求(Req_SearchMyFare对象)
+|参数名|				|类型|
+ gameID					int32
+
+响应(Ans_SearchMyFare)
+|参数名|				|类型|
+ gameID					int32	 //游戏ID
+ fare						 int32 //自己的话费数量
+
+#申请兑换话费(100002)----------------------------------100002
+请求(Req_ApllyForFare对象)
+|参数名|				|类型|
+ gameID					int32		
+ ukey						string				//玩家兑换话费对应的手机号或者Q点对应的QQ号
+ chgkey					 int32				//兑换数量
+
+响应(通用结果对象, 表示成功或者失败)
+|参数名|				|类型|
+
+服务器返回
+#场次对应话费情况(100003)----------------------------------100003
+请求(Req_SearchGameRemainFare对象)
+|参数名|				|类型|
+ gameID					int32
+
+响应(Ans_SearchGameRemainFare对象)
+|参数名|				|类型|
+ gameID					int32
+ list 				GameRemainFare	//每个场次对应的情况
+
+GameRemainFare对象结构
+int32 sceneID						//场次ID
+int32 remain						//剩余话费
+int32 total							//总共话费
+int32 nexttime					//下次发放话费时间
+
+
+
+
+
+
+#领取每日之星话费(100004)----------------------------------100004
+
+请求(Req_GetStarFare对象)
+|参数名|				|类型|
+ gameID					int32
+ type						int32 //类型, 1:领取昨日最高充值 2:领取昨日赢取最多
+
+响应(Ans_GetStarFare对象)
+|参数名|				|类型|
+ gameID					int32
+ getFare				int32
+ nowFare				int32
+ 

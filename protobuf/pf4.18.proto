@@ -1,0 +1,395 @@
+package pf;
+
+option optimize_for = LITE_RUNTIME;
+
+// ////////////////////////////////////////////////////////////////////////
+// 请求结构: 包长(4byte) 包头+包体的长度
+// 包头: Type[1byte] option[1byte] reserve[2byte]命令ID(4byte) Seq(4byte) 
+// 包体: Data(byte[*])可变长
+// 
+// 包头中的Type:
+// 	1- 请求,Client->Server 
+// 	2- 正常回应,Server->Client
+// 	3- 错误回应,消息body为通用错误返回包
+
+// 	协议id分段:
+// 	100-199  用户信息相关
+// 	200-299  大厅、房间相关
+// 	300-399  游戏信息相关（开始游戏、结束游戏、踢用户、平台转发游戏msg等）
+// 	1000以上 具体游戏自己用的消息id（老虎机是1010）
+ 
+
+// ////////////////////////////////////////////////////////////////////////
+// 100 登录
+
+message Req_Login {
+	required int32 userID = 1;
+	required int32 expireTime = 2;
+	required string certStr = 3;
+	//required bool isNewUser = 4; 
+	required string nickName = 5;
+	required string picUrl = 6;
+	required string pf = 7;
+	required int32 sex = 8;
+	
+	required int32 gameID = 9;
+}
+
+//原名 Ans_Pro_GetUserInfo
+message Ans_Pro_Login {
+	required Ans_BaseInfo baseInfo = 1;
+	required Ans_GameInfo gameInfo = 2;
+}
+
+message Ans_BaseInfo {
+	//required int32 gold = 1;
+	//required string nikeName = 2;
+	required string nickName = 2;
+	required string picUrl = 3;
+	required int32 loginNum = 4;
+	required int32 loginIP = 5;
+	required int32 lastLoginTime = 6;
+	required int32 createTime = 7;
+	
+}
+
+message Ans_GameInfo {
+	optional int32 coin = 1;
+	optional int32 points = 2;
+	optional int32 win = 3;
+	optional int32 loss = 4;
+	optional int32 equal = 5;
+	optional int32 esc = 6;
+	optional int32 org = 7;
+	optional int32 title = 8;
+	optional int32 orgState = 9;
+	optional int32 gameTime = 10;
+	optional int32 gameBoxID = 11;
+	optional int32 gameBoxExpire = 12;
+	optional int32 serverTime = 13;
+	optional int32 doneGuide = 14;//是否完成新手引导
+	optional int32 achieveID = 15;//成就称号id
+	
+	optional int32 conLoginTimes = 16; //累计连续登录次数
+	optional int32 weekAwardRecords = 17; //七天礼包领取状态记录
+	optional int32 brokeTimes = 18;	//剩余破产保护次数
+	optional int32 winCoinMax = 19; //单次赢最多
+	optional int32 lossCoinMax = 20; //单次输最多
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// 102 用户信息变化通知
+// Ans_GameInfo
+
+// ////////////////////////////////////////////////////////////////////////
+// 201 获取桌子列表
+
+message Req_GetTableList {
+	//required int32 gameID = 1;
+	//required int32 senceID = 2;
+}
+
+message Ans_Pro_GetTableListInfo {
+	//required int32 gameID = 1;
+	//required int32 senceID = 2;
+	repeated Ans_SimpleTableInfo infos = 1;
+}
+
+message Ans_SimpleTableInfo {
+	//required int32 roomID = 1;
+  	required int32 tableID = 2;		
+  	//required string tableName = 3;
+  	required int32 propID = 4;//属性id
+  	required int32 playerNum = 5 [default = 0];
+  	required int32 standNum = 6 [default = 0];
+	
+	required int32 gameState = 7 [default = 0];		//是否开始游戏
+	repeated Ans_SimpleSeatInfo infos = 8;	//位子信息
+}
+
+message Ans_SimpleSeatInfo {
+	required int32 userID = 1 [default = 0];
+	required int32 readyState = 2 [default = 0]; 	//准备状态
+	required string nickName = 3;
+	required string picUrl = 4;
+    
+    required int32 seatID = 5;
+}
+
+
+// ////////////////////////////////////////////////////////////////////////
+// 230 进入房间
+
+message Req_EnterRoom {
+	required int32 roomID = 1;
+}
+
+message Ans_Pro_EnterRoom {
+	required int32 roomID = 1;
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// 231 离开房间
+
+message Req_LeaveRoom {
+}
+
+message Ans_Pro_LeaveRoom {
+}
+
+
+
+// ////////////////////////////////////////////////////////////////////////
+// EnterTable - 200
+// 验证是否在该房间内，table是否属于该房间
+// 协议直接面向table，需要通知room的部分由table实现
+// 牌面信息不在此协议返回
+
+message Req_EnterTable {
+	//required int32 roomID = 1;
+	required int32 tableID = 2;  // -1：服务器匹配, 用于做快速进入的入口
+	required int32 seatID = 3 [default = 0];	//座位号，从0开始，-1表示希望服务器选择，-2表示不选任何座位
+	//optional int32 secenID = 4;
+	
+	required int32 intent = 4 [default = 0];	//意图，1表示要坐下，2表示要旁观，-1表示服务器判断
+}
+
+message Ans_Pro_OnEnterTable {
+	//required int32 gameID = 1;
+	//required int32 senceID = 2;
+	//required int32 roomID = 3;
+	required int32 tableID = 4;
+	//required string tableName = 5;
+	//required int32 tableType = 6;
+	repeated Ans_TablePlayerInfo players = 7;
+	//repeated Ans_TablePlayerInfo lookers = 14;
+}
+
+message Ans_TablePlayerInfo {
+	optional int32 seatID = 1;
+	required int32 userID = 2;
+	optional string nickName = 3;
+	optional string headUrl = 4;
+	optional int32 isAdmin = 5 [default = 0];
+	optional int32 win = 6 [default = 0];
+	optional int32 loss = 7 [default = 0];
+	optional int32 equal = 8 [default = 0];
+	optional int32 esc = 9 [default = 0];
+	optional int32 coin = 10 [default = 0];
+	optional int32 points = 11 [default = 0];
+	optional int32 sex = 12 [default = 0];
+	optional int32 achieveID = 13;//成就称号id
+	optional int32 gameBoxID = 14;
+	
+	optional int32 isLooker = 15; //1旁观者
+}
+
+// 有人进入桌子通知 210
+message Ans_Pro_AddTablePlayer {
+	required Ans_TablePlayerInfo player = 1;
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// SitDown - 203
+message Req_SitDown {
+	//required int32 roomID = 1;
+	//required int32 tableID = 2;
+	required int32 seatID = 3;
+}
+
+// 也用于 有人坐下通知 - 213
+message Ans_Pro_NotifySitDown {
+	required int32 userID = 1;	//保证客户端先收到有人进入桌子的通知（包含了该用户信息）
+	required int32 seatID = 2;
+}
+
+
+// ////////////////////////////////////////////////////////////////////////
+// ReadyGame - 208
+message Req_ReadyGame {
+	//required int32 roomID = 1;
+	//required int32 tableID = 2;
+	
+	//required int32 seatID = 3;
+}
+
+message Ans_Pro_ReadyGame {
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// StandUp - 204
+message Req_StandUp {
+	//required int32 roomID = 1;
+	//required int32 tableID = 2;
+	
+	//required int32 seatID = 3;
+}
+
+// 有人站起通知也是这个结构 - 214
+message Ans_Pro_NotifyStandUp {
+	required int32 userID = 1;
+}
+
+
+// ////////////////////////////////////////////////////////////////////////
+// LeaveTable - 207
+message Req_LeaveTable {
+	//required int32 roomID = 1;
+	//required int32 tableID = 2;
+}
+
+message Ans_Pro_LeaveTable {
+}
+
+// 有人离开桌子通知 212
+message Ans_Pro_DelTablePlayer {
+	required int32 userID = 1;
+}
+
+
+
+
+// ////////////////////////////////////////////////////////////////////////
+// GameMsg 302
+message Pro_GameMsg {
+  //optional int32 roomID = 1;
+  optional int32 tableID = 2;
+  required int32 gameCmdID = 3;
+  optional bytes paramBytes = 4;
+}
+
+// 通知__桌子玩家信息改变，每局结束时，将所有人的信息变化全桌广播一次  
+// 不用二次编码 211
+message Ans_Pro_TablePlayerInfoChange {
+	//required int32 userID = 1;
+	repeated Ans_TablePlayerInfo infos = 2;  
+}
+
+
+
+// ////////////////////////////////////////////////////////////////////////
+// NewUserAward 106 赠送新用户金币，只在新用户登录时主动推到前台一次
+message NewUserNotifyMsg {
+	required int32 coin = 1;
+}
+
+
+// ////////////////////////////////////////////////////////////////////////
+// ConLoginAward 232 连续登录奖励
+message ConLoginAwardNotify {
+	required int32 times = 1;
+	required int32 coin = 2;
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// WeekAward 233 领取七天礼包
+message Req_WeekAward {
+}
+message Ans_WeekAward {
+	required int32 dayIndex = 1;  // 第几天 0开始
+	required int32 coin = 2;
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// broke  234 破产保护通知
+message BrokeProtectNotify {
+	required int32 times = 1; // 扣除本次还剩几次
+	required int32 coin = 2;   // 破产保护赠送 0:次数用完没得送了
+}
+
+// 235 破产保护数据刷新
+//message BrokeRefreshNotify {
+//	required int32 times = 1; //剩余几次
+//}
+
+// 236 在线时长礼包通知
+message OnlineAwardNotify {
+	required int32 tarTime = 1;	//需要累积时长
+	required int32 accuTime = 2; //已经累积时长
+	required int32 coin = 3; 	//达到后可获得
+}
+
+// 237 在线时长礼包领取
+message Req_GetOnlineAward {
+	//required int32 roomID = 1;
+}
+// Ans OnlineAwardNotify
+
+// 238 对局任务刷新通知  accuTimes >= tarTimes 表示完成并领取
+message RoundAwardNotify {
+	required int32 tarTimes = 1; //需要次数
+	required int32 accuTimes = 2; //已累积次数
+	required int32 coin = 3; //达到可获得
+}
+
+// 239 踢出桌子通知
+message TableKickNotify {
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// ChatOnTable 202 同一桌的人聊天
+message Req_Pro_Chat {
+	//required int32 roomID = 1;
+	//required int32 tableID = 2;
+	required string msg = 3;
+}
+
+message Ans_Pro_Chat {
+	required int32 fromUserID = 1;
+	required string msg = 2;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ////////////////////////////////////////////////////////////////////////
+// common & test - 99
+message ErrorMes {
+  required int32 errorCode = 1;
+  required string errorMsg = 2;
+}
+
+message Req_Test {
+  required int32 uid = 1;
+  required string name = 2 [default = ""];
+  optional bytes buf = 3;
+}
+
+message Ans_Test {
+  required int32 uid = 1;
+  optional bytes buf = 2;
+  required string name = 3 [default = ""];
+}
+
+
+
+
+
+
+
+
+
+

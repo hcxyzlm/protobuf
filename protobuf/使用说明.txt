@@ -1,0 +1,18 @@
+文件simple_proto.bat用记事本打开内容为如下:
+protoc.exe -I=./ --cpp_out=./proto  BullFight.proto 
+pause
+//调用命令protoc.exe 把原文件BullFight.proto生成C++用的CC文件和H文件放到目录proto
+
+文件BullFight.proto是protobuf协议学的原文件用记事本编写
+关键字解释
+//package tutorial为生成的空间名
+message Ans_OnEnterGame { //定义的类名
+	repeated Ans_SeatInfo infolist = 1; //repeated 是循环的意思表示可能用很多个
+	required int32 tableStatus = 2;     //required 表示必须要有数据的
+	required int32 curSpeak = 3;
+	optional int32 bankerUserID = 4 [default = -1]; //optional  这个数据可以有可以无
+}
+
+option optimize_for = LITE_RUNTIME;
+生成协议文件时，这一句必须要加上
+否则到时候游戏安装包在android2.2上面没办法运行的

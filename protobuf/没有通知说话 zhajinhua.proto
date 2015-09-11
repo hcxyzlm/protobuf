@@ -1,0 +1,90 @@
+package zhajinhua;
+
+option optimize_for = LITE_RUNTIME;
+
+//cmd 1100
+message Ans_OnEnterGame {
+	repeated Ans_SeatInfo infolist = 1;//用户信息
+	required int32 tableStatus = 2;//当前桌子状态
+	required int32 TotalMoney=3;//桌面上总共多少钱
+	required int32 CurSpeak=4; //当前谁操作
+}
+
+message Ans_SeatInfo {
+	required int32 userID = 1;
+	required int32 seatID = 2;
+	required int32 bet = 3;//下注多少
+ 	required int32 status = 4;//当前状态 弃牌，看牌，暗牌
+  	repeated int32 pokers = 5;//牌
+}
+
+
+//cmd 1000
+message Req_Bet{     //下注
+	required int32 flat =1;  // 0下注 1加注
+	optional int32 betCount=2; //下注额（加注时有用）
+}
+message Ans_Bet{     //
+	required int32 seatid=1;
+	required int32 flat =2;  //0 下注 1加注 2下底注
+	required int32 betCount=3; //下注额
+	required int32 money=4;//玩家总下注额
+	required int32 TotalMoney=5;//当前桌子总下注额
+	required int32 nextSpeak= 6;//下一个说话
+	required int32 nextSpeakType= 7;//操作类型
+}
+
+//cmd 1001
+message Req_OpenPoker{     //看牌
+}
+message Ans_OpenPoker{     //看牌
+	required int32 seatid=1;
+	repeated int32 pokers=2;
+}
+
+//cmd 1002
+message Req_CompairPoker{     //比牌
+	required int32 ObjSeatid=1;//目标id
+}
+message Ans_CompairPoker{     //比牌
+	required int32 seatID =1;
+	required int32 ObjSeatid=2;//目标id
+	required int32 winner=3;//比牌赢的玩家id
+	required int32 nextSpeak= 4;//下一个说话
+	required int32 nextSpeakType= 5;//操作类型	
+}
+
+//cmd 1003
+message Req_Abandon{     //弃牌
+}
+message Ans_Abandon{     //弃牌
+	required int32 seatid=1;
+	required int32 nextSpeak= 2;//下一个说话
+	required int32 nextSpeakType= 3;//操作类型
+}
+
+//cmd 1004
+message Ans_Result{//结算
+	repeated ResultInfo resultinfo =1;
+}
+message ResultInfo{
+	required int32 seatID=1;
+	required int32 winner =2;         //输赢
+	required int32 winCount=3;//赢多少钱
+	repeated PokerInfo pokers=4;  //
+}
+
+//cmd 1005
+message Ans_SendPoker{//发牌
+	repeated PokerInfo Poker=1;
+}
+message PokerInfo{
+	required int32 seatID=1; //发给谁
+	repeated int32 poker=2;  //发了什么牌 可以多张
+}
+
+message Ans_NotifySpeak{//通知玩家说话
+	required int32 seatID =1;
+	required int32 totalTimes=2;//倒计时总时间
+	required int32 CurStatus=3;//当前可以操作的内容
+}

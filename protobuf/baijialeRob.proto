@@ -1,0 +1,40 @@
+package baijiale;
+
+//msgcmd 1000
+message Ans_NotifyBet{//通知玩家开始下注
+	required int32 Actionid=1;
+	repeated int32 seatID =2;
+	required int32 times =3;
+	required int32 totalTimes=4;
+}
+
+//msgcmd 1004
+message Ans_PartPoker{          //通知切牌
+	required int32 seatID=1;
+	required int32 Poker=2;
+	required int32 totalcard=3;
+}
+
+//msgcmd 1006
+message Ans_NoticeSeePoker{//通知看牌
+	required int32 seatID= 1;//谁看牌
+	required int32 TargetID= 2;//看谁的牌
+}
+
+//msgcmd 1000
+message Req_UserAction{     //玩家操作
+	required int32 seatID =1;
+	required int32 flat   =2;  //下注1 重复下注2 清除下注3 看牌中4 看牌结束5 买定离手6 切牌8
+	optional int32 Playerseatid=3;   //闲家
+	optional int32 Bankerseatid=4;   //庄家
+	optional int32 SeePoker =5;
+	optional int32 movex=6;
+	optional int32 movey=7;	
+	optional int32 state=8;	       //看完一张牌
+	optional BetInfo betinfo=9;   //下注信息
+}
+message BetInfo{//下注信息
+	required int32 totalbet =1;    //可以写0
+	required int32 bet    =2;      // 下注额是多少
+	required int32 betFlat    =3;  //如果是下注 下给谁了  1闲 2庄 3和 4闲对 5庄对
+}

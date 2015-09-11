@@ -1,0 +1,11 @@
+package tutorial;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.zengame.proto.rsp.user";
+option java_outer_classname = "Ans_PushDialogBox";
+
+message Ans_PushDialogBoxMsg {
+	required int32 params = 1;//byte顺序:(type),(position,0-正中弹出式，1-左下浮动式，2-右下浮动式，3顶部滚动式),(range出现范围,0大厅，1桌子),(delay延时出现时间，正中弹出式，可以忽略该值)
+	required string content = 2;//内容
+	repeated string extra = 3;//额外内容
+}

@@ -1,0 +1,113 @@
+package tutorial;
+
+option java_package = "com.zengame.proto.game.bullfight.hundredBullFight";
+option java_outer_classname = "HundredBullFightProto";
+
+
+
+//进入百人斗牛房间    cmd 1220
+message Ans_OnEnterHundredBullFight{
+	required Ans_HundredBullFightStart ans_hundredBullFightStart = 1;
+	required int32 tableStatus = 2;
+	repeated int32 totalBetList = 3;
+	repeated int32 myBetList = 4;
+	repeated PockerInfo pockerArr = 5;
+}
+
+
+//游戏开始           cmd 1221
+message Ans_HundredBullFightStart{
+	repeated HBFTablePlayerInfo players = 1;
+	required int32 betUpper = 2;
+	required int32 bankerID = 3;
+	repeated EachRecord recordList = 4;
+}
+
+
+message HBFTablePlayerInfo{
+	required int32 userID = 1;
+	optional int32 rounds = 2;
+	optional int32 lastWin = 3;
+	optional int32 totalWin = 4;
+}
+
+
+message EachRecord{
+	repeated int32 list = 1;
+}
+
+
+//开始下注          cmd 1222
+message Ans_HBFStartBet{
+}
+
+
+//玩家下注请求      cmd 1223
+message Req_HBFPlayerBet{
+	required int32 type = 1;
+	required int32 bet = 2;
+}
+
+
+//玩家下注请求返回
+message Ans_HBFPlayerBet{
+	required int32 type = 1;
+	required int32 bet = 2;
+}
+
+
+//1s推送 所以下注情况  cmd 1224
+message Ans_TotalBet{
+	repeated int32 totalBetList = 1;
+}
+
+
+//发牌              cmd 1225
+message Ans_HBFDealPocker{
+	repeated PockerInfo pockerArr = 1;
+}
+
+
+message PockerInfo{
+	required int32 seatID = 1;
+	repeated int32 pockerArr = 2;
+	required int32 careType = 3;
+}
+
+
+//结算              cmd 1226
+message Ans_HBFResult{
+	repeated HBFResultInfo retlists = 1;
+}
+
+
+message HBFResultInfo{
+	required int32 userID = 1;
+	repeated int32 coinsArr = 2;
+}
+
+
+//申请上庄 type: 1:申请上庄 2: 申请下庄 cmd 1227
+message Req_ApplyBanker{
+	required int32 type = 1;
+}
+
+
+//申请上庄返回
+message Ans_ApplyBanker{
+	required int32 type = 1;
+}
+
+
+//庄家队列       cmd 1228
+message Req_BankerList{
+}
+
+message Ans_BankerList{
+	repeated ApplyInfo bankerList = 1;
+}
+
+message ApplyInfo{
+	required int32 userID = 1;
+	required string nickName = 2;
+}

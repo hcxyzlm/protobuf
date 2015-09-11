@@ -1,0 +1,46 @@
+package tutorial;
+
+option java_package = "com.zengame.proto.act.fare";
+option java_outer_classname = "WinFareProto";
+
+message Req_SearchMyFare {
+	required int32 gameID = 1;
+}
+
+message Ans_SearchMyFare {
+	required int32 gameID = 1;
+	required int32 fare = 2;
+}
+
+message Req_SearchGameRemainFare {
+	required int32 gameID = 1;
+}
+
+message Ans_SearchGameRemainFare {
+	required int32 gameID = 1;
+	repeated GameRemainFare list = 2;
+}
+
+message GameRemainFare {
+	required int32 sceneID = 1;
+	required int32 remain = 2;
+	required int32 total = 3;
+	required int32 nexttime = 4;
+}
+
+message Req_ApllyForFare {
+	required int32 gameID = 1;
+	required string ukey = 2;
+	required int32  chgkey = 3;
+}
+
+message Req_GetStarFare {
+	required int32 gameID = 1;
+	required int32 type = 2;
+}
+
+message Ans_GetStarFare {
+	required int32 gameID = 1;
+	required int32 getFare = 2;
+	required int32 nowFare = 3;
+}

@@ -1,0 +1,38 @@
+package tutorial;
+
+
+option java_package = "com.zengame.proto.rsp.table.gamblingparty";
+option java_outer_classname = "GamblingPartyTaskProto";
+
+//查询牌局任务  cmd:123
+message Req_GamblingPartyTask {
+	required int32 gameID = 1;
+	required int32 roomID = 2;
+	required int32 tableID = 3;
+}
+
+//查询返回
+message Ans_GamblingPartyTask {
+	required int32 gameID = 1;
+	required int32 roomID = 2;
+	required int32 tableID = 3;
+	required int32 taskID = 4;
+	required int32 taskName = 5;
+	required string desc = 6;
+}
+
+//完成牌型任务, 通知前端  cmd:124
+message Ans_GamblingPartyTaskResult {
+	required int32 gameID = 1;
+	required int32 roomID = 2;
+	required int32 tableID = 3;
+	required int32 taskID = 4;
+	repeated GPTResultInfo list = 5;
+}
+
+message GPTResultInfo{
+	required int32 userID = 1;
+	optional int32 coins = 2;
+	optional int32 points = 3;
+	optional int32 fares = 4;
+}

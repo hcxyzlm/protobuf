@@ -1,0 +1,35 @@
+package tutorial;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.zengame.proto.rsp.table.gamblingparty";
+option java_outer_classname = "GamblingPartyTaskProto";
+
+//查询牌局任务  cmd:123
+message Req_GamblingPartyTask {
+
+}
+
+//查询返回
+message Ans_GamblingPartyTask {
+	required int32 tableID = 1;
+	required int32 taskID = 2;
+	required string taskName = 3;
+	required string desc = 4;
+	optional int32 coins = 5;
+	optional int32 points = 6;
+	optional int32 fares = 7;
+}
+
+//完成牌型任务, 通知前端  cmd:124
+message Ans_GamblingPartyTaskResult {
+	required int32 tableID = 1;
+	required int32 taskID = 2;
+	repeated GPTResultInfo list = 3;
+}
+
+message GPTResultInfo{
+	required int32 userID = 1;
+	optional int32 coins = 2;
+	optional int32 points = 3;
+	optional int32 fares = 4;
+}

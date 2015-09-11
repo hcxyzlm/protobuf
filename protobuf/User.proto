@@ -1,0 +1,63 @@
+package test;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.zengame.proto.rsp.user";
+option java_outer_classname = "UserProto";
+
+message Req_Login {
+  required int32 userID = 1;
+  required int32 expireTime = 2;
+  required string certStr = 3;
+  required bool isNewUser = 4;
+  required string nickName = 5;
+  required string picUrl = 6;
+  optional string pf = 7;
+  optional int32 sex = 8;
+  required int32 gameID = 9;
+  optional string imei = 10 [default = "def"];//手机imei标志
+  optional string channel = 11 [default = "def"];//渠道标志
+}
+
+message Req_GetUserInfo {
+	optional int32 userID = 1 [default = -1];
+}
+message Ans_Pro_GetUserInfo {
+	required Ans_BaseInfo baseInfo = 1;
+	required Ans_GameInfo gameInfo = 2;
+	optional int32 userID = 3 [default = -1];
+}
+
+message Ans_BaseInfo {
+  required int32 gold = 1;
+  required string nikeName = 2;
+  required string picUrl = 3;
+  required int32 loginNum = 4;
+  required int32 loginIP = 5;
+  required int32 lastLoginTime = 6;
+  required int32 createTime = 7;
+}
+
+message Ans_GameInfo {
+  required int32 coin = 1;
+  required int32 points = 2;
+  required int32 win = 3;
+  required int32 loss = 4;
+  required int32 equal = 5;
+  required int32 esc = 6;
+  required int32 org = 7;
+  required int32 title = 8;
+  required int32 orgState = 9;
+  required int32 gameTime = 10;
+  optional int32 gameBoxID = 11;
+  optional int32 gameBoxExpire = 12;
+  optional int32 serverTime = 13;
+  optional int32 doneGuide = 14;//是否完成新手引导
+  optional int32 achieveID = 15;//成就称号id
+  optional int32 createTime = 16;//创建的时间戳
+  optional int32 modifyTime = 17;//最近登录的时间戳
+  optional int32 maxCoin = 18;//最大游戏币
+  optional int32 maxWinCoin = 19;//最大赢的游戏币
+  optional string bestCard = 20;//最好牌型
+  optional int32 pay = 21;//充值额度
+  optional int32 payFeed = 22;//充值回馈标记
+}

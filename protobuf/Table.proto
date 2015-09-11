@@ -1,0 +1,115 @@
+package tutorial;
+
+option java_package = "com.zengame.proto.rsp.table";
+option java_outer_classname = "TableProto";
+option optimize_for = LITE_RUNTIME;
+
+message Ans_Pro_OnEnterTable {
+	required int32 gameID = 1;
+	required int32 senceID = 2;
+	required int32 roomID = 3;
+	required int32 tableID = 4;
+	required string tableName = 5;
+	required int32 tableType = 6;
+	repeated Ans_TablePlayerInfo players = 7;
+	repeated Ans_TablePlayerInfo lookers = 8;
+}
+
+message Ans_TablePlayerInfo {
+	optional int32 seatID = 1;
+  optional int32 userID = 2;
+  optional string nickName = 3;
+  optional string headUrl = 4;
+  optional int32 isAdmin = 5 [default = 0];
+  optional int32 win = 6 [default = 0];
+  optional int32 loss = 7 [default = 0];
+  optional int32 equal = 8 [default = 0];
+  optional int32 esc = 9 [default = 0];
+  optional int32 coin = 10 [default = 0];
+  optional int32 points = 11 [default = 0];
+  optional int32 sex = 12 [default = 0];
+  optional int32 achieveID = 13;//成就称号id
+  optional int32 gameBoxID = 14;
+}
+
+message Ans_Pro_AddTablePlayer {
+	required Ans_TablePlayerInfo player = 1;
+}
+
+message Ans_Pro_DelTablePlayer {
+	required int32 userID = 1;
+}
+
+message Ans_Pro_NotifyStandUp {
+	required int32 userID = 1;
+}
+
+message Ans_Pro_NotifySitDown {
+	required int32 userID = 1;
+	required int32 seatID = 2;
+}
+
+message Ans_Pro_TablePlayerInfoChange {
+	required int32 userID = 1;
+	required bytes infos = 2;
+}
+
+message Req_Pro_Chat {
+	required int32 roomID = 1;
+	required int32 tableID = 2;
+	required string msg = 3;
+}
+
+message Ans_Pro_Chat {
+	required int32 fromUserID = 1;
+	required string msg = 2;
+	required string fromNickName = 3;
+}
+
+message Req_EnterTable {
+	required int32 roomID = 1;
+	required int32 tableID = 2;
+	required int32 seatID = 3;
+	optional int32 secenID = 4;
+}
+
+message Req_SitDown {
+	required int32 roomID = 1;
+	required int32 tableID = 2;
+	required int32 seatID = 3;
+}
+
+message Req_StandUp {
+	required int32 roomID = 1;
+	required int32 tableID = 2;
+}
+
+message Req_LeaveTable {
+	required int32 roomID = 1;
+	required int32 tableID = 2;
+	optional int32 isForce = 3 [default = 1];//是否是强制离开
+}
+
+message Req_ReadyGame {
+	required int32 roomID = 1;
+	required int32 tableID = 2;
+}
+
+message Req_Trusteeship {
+	required int32 roomID = 1;
+	required int32 tableID = 2;
+	required int32 sign = 3;//1:托管, 0:取消托管
+}
+
+message Ans_NotifyTrusteeship {
+	required int32 userID = 1;
+	required int32 sign = 2;//1:托管, 0:取消托管
+}
+
+//换桌
+message Req_ChangeTable {
+	required int32 gameID = 1;
+	required int32 secenID = 2;
+	required int32 roomID = 3;
+	optional int32 tableID = 4 [default = -1];
+}

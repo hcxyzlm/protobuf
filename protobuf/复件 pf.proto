@@ -1,0 +1,304 @@
+﻿package pf;
+
+
+
+// ////////////////////////////////////////////////////////////////////////
+// 简要
+// 游戏-场次-房间-桌子 （qq：游戏-区-场-桌子） （扯闲的场对应这里的房间）
+// 游戏、场次、房间的相关信息（列表，人数等）均由客户端从web服务器取得，此类信息由game服务器上报。
+// 用户点击某个房间将会进行以下动作：登录-进入房间-获取桌子列表
+// 跟原协议统一，暂时不用sint
+// 基本上以用户动作划分协议，一个动作包含本身的回应及所引起变化的通知
+// 一个人不能同时出现在一个房间的两张桌子上
+
+// ////////////////////////////////////////////////////////////////////////
+// 扩展相关
+// 比赛将会是特殊的房间
+// 考虑同一个游戏，进两个房间的情况
+// 考虑增加管理员模式
+// 考虑共用连接的可能性
+// 考虑没有位子旁观和直播
+
+// ////////////////////////////////////////////////////////////////////////
+// 列表模式 vs 桌子模式
+// 打算做协议兼容
+// 不同点一：桌子列表信息刷新方式
+//			列表模式下，由客户端主动拉取；
+//			桌子模式下，则是由于相关显示信息发生变动时，服务器主动广播；
+//			计划使用配置区分，在提交变动的接口中加入判断是否进行广播。
+//	不同点二：进入桌子的用户操作
+//			列表模式下，点击桌子，目的是自动找位子，然后坐下或者旁观
+//			桌子模式下，可以点桌子也可以点击位子，有人的位子表示要旁观，否则表示坐下
+//			计划在进入桌子协议中区分：位子(是否自动寻找)，意图
+
+// ////////////////////////////////////////////////////////////////////////
+// 进入桌子后的角色区分
+// 
+
+// ////////////////////////////////////////////////////////////////////////
+// Login - 100
+// 加载用户平台数据和游戏数据，并缓存
+// 记录gameID，需要在进入房间的时候进行校验
+
+message Req_Login {
+	required int32 userID = 1;
+	required int32 expireTime = 2;
+	required string certStr = 3;
+	required bool isNewUser = 4; //这个标志现在只用于判断是否向前台push新手礼包消息
+	required string nickName = 5;
+	required string picUrl = 6;
+	optional string pf = 7;
+	optional int32 sex = 8;
+	
+	required int32 gameID = 9;
+}
+
+//原名 Ans_Pro_GetUserInfo
+message Ans_Pro_Login {
+	required Ans_BaseInfo baseInfo = 1;
+	required Ans_GameInfo gameInfo = 2;
+}
+
+message Ans_BaseInfo {
+	//required int32 gold = 1;
+	//required string nikeName = 2;
+	required string nickName = 2;
+	required string picUrl = 3;
+	required int32 loginNum = 4;
+	required int32 loginIP = 5;
+	required int32 lastLoginTime = 6;
+	required int32 createTime = 7;
+	
+}
+
+message Ans_GameInfo {
+	required int32 coin = 1;
+	required int32 points = 2;
+	required int32 win = 3;
+	required int32 loss = 4;
+	required int32 equal = 5;
+	required int32 esc = 6;
+	required int32 org = 7;
+	required int32 title = 8;
+	required int32 orgState = 9;
+	required int32 gameTime = 10;
+	optional int32 gameBoxID = 11;
+	optional int32 gameBoxExpire = 12;
+	optional int32 serverTime = 13;
+	optional int32 doneGuide = 14;//是否完成新手引导
+	optional int32 achieveID = 15;//成就称号id
+	
+}
+
+
+// ////////////////////////////////////////////////////////////////////////
+// new - EnterRoom - 230
+// 校验是否满足进入房间的限制
+// 记录进入了哪个房间，可能进入多个房间
+
+message Req_EnterRoom {
+	required int32 roomID = 1;
+}
+
+message Ans_Pro_EnterRoom {
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// new - LeaveRoom - 231
+// 离开房间
+
+
+message Req_LeaveRoom {
+	required int32 roomID = 1;
+}
+
+message Ans_Pro_LeaveRoom {
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// GetTableList - 201
+// 不打算验证用户是否在本房间
+// 可能是客户端主动拉取，也可能是服务器推送
+// 需考虑一人进入多个房间的情况
+// 暂定列表模式
+
+message Req_GetTableList {
+	//required int32 gameID = 1;
+	//required int32 senceID = 2;
+	
+	required int32 roomID = 1;
+}
+
+message Ans_Pro_GetTableListInfo {
+	//required int32 gameID = 1;
+	//required int32 senceID = 2;
+	repeated Ans_SimpleTableInfo infos = 1;
+	
+	required int32 roomID = 2;
+}
+
+message Ans_SimpleTableInfo {
+	//required int32 roomID = 1;
+  	required int32 tableID = 2;		
+  	//required string tableName = 3;
+  	required int32 propID = 4;//属性id
+  	required int32 playerNum = 5 [default = 0];
+  	required int32 standNum = 6 [default = 0];
+	
+	required int32 gameState = 7 [default = 0];		//是否开始游戏
+	repeated Ans_SimpleSeatInfo infos = 8;	//位子信息
+}
+
+message Ans_SimpleSeatInfo {
+	required int32 userID = 1 [default = 0];
+	required int32 readyState = 2 [default = 0]; 	//准备状态
+	required string nickName = 3;
+	required string picUrl = 4;
+    
+    required int32 seatID = 5;
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// EnterTable - 200
+// 验证是否在该房间内，table是否属于该房间
+// 协议直接面向table，需要通知room的部分由table实现
+// 牌面信息不在此协议返回
+
+message Req_EnterTable {
+	required int32 roomID = 1;
+	required int32 tableID = 2;
+	required int32 seatID = 3 [default = 0];	//座位号，从1开始，0表示希望服务器选择，-1表示不选任何座位
+	//optional int32 secenID = 4;
+	
+	required int32 intent = 4 [default = 0];	//意图，1表示要坐下，2表示要旁观，0表示服务器判断
+}
+
+message Ans_Pro_OnEnterTable {
+	//required int32 gameID = 1;
+	//required int32 senceID = 2;
+	required int32 roomID = 3;
+	required int32 tableID = 4;
+	//required string tableName = 5;
+	//required int32 tableType = 6;
+	repeated Ans_TablePlayerInfo players = 7;
+	//repeated Ans_TablePlayerInfo lookers = 14;
+}
+
+message Ans_TablePlayerInfo {
+	optional int32 seatID = 1;
+	optional int32 userID = 2;
+	optional string nickName = 3;
+	optional string headUrl = 4;
+	optional int32 isAdmin = 5 [default = 0];
+	optional int32 win = 6 [default = 0];
+	optional int32 loss = 7 [default = 0];
+	optional int32 equal = 8 [default = 0];
+	optional int32 esc = 9 [default = 0];
+	optional int32 coin = 10 [default = 0];
+	optional int32 points = 11 [default = 0];
+	optional int32 sex = 12 [default = 0];
+	optional int32 achieveID = 13;//成就称号id
+	optional int32 gameBoxID = 14;
+	
+	optional int32 isLooker = 15;
+}
+
+// 有人进入桌子通知 210
+message Ans_Pro_AddTablePlayer {
+	required Ans_TablePlayerInfo players = 1;
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// SitDown - 203
+message Req_SitDown {
+	required int32 roomID = 1;
+	//required int32 tableID = 2;
+	required int32 seatID = 3;
+}
+
+// 也用于 有人坐下通知 - 213 203
+message Ans_Pro_NotifySitDown {
+	required int32 userID = 1;	//保证客户端先收到有人进入桌子的通知（包含了该用户信息）
+	required int32 seatID = 2;
+}
+
+
+// ////////////////////////////////////////////////////////////////////////
+// ReadyGame - 208
+message Req_ReadyGame {
+	required int32 roomID = 1;
+	//required int32 tableID = 2;
+	
+	//required int32 seatID = 3;
+}
+
+message Ans_Pro_ReadyGame {
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// StandUp - 204
+message Req_StandUp {
+	required int32 roomID = 1;
+	//required int32 tableID = 2;
+	
+	//required int32 seatID = 3;
+}
+
+// 有人站起通知也是这个结构 - 214
+message Ans_Pro_NotifyStandUp {
+	required int32 userID = 1;
+}
+
+
+// ////////////////////////////////////////////////////////////////////////
+// LeaveTable - 207
+message Req_LeaveTable {
+	required int32 roomID = 1;
+	//required int32 tableID = 2;
+}
+
+message Ans_Pro_LeaveTable {
+}
+
+// 有人离开桌子通知 212
+message Ans_Pro_DelTablePlayer {
+	required int32 userID = 1;
+}
+
+
+
+
+// ////////////////////////////////////////////////////////////////////////
+// GameMsg 302
+message Pro_GameMsg {
+  optional int32 roomID = 1;
+  optional int32 tableID = 2;
+  required int32 gameCmdID = 3;
+  optional bytes paramBytes = 4;
+}
+
+// 通知__桌子玩家信息改变，每局结束时，将所有人的信息变化全桌广播一次  
+// 不用二次编码 211
+message Ans_Pro_TablePlayerInfoChange {
+	required int32 userID = 1;
+	required Ans_TablePlayerInfo infos = 2;  //byte数组，实际上是Ans_TablePlayerInfo 的pb编码后的输出
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// common & test - 99
+message ErrorMes {
+  required int32 errorCode = 1;
+  required string errorMsg = 2;
+}
+
+message Req_Test {
+  required int32 uid = 1;
+  required string name = 2 [default = ""];
+  optional bytes buf = 3;
+}
+
+message Ans_Test {
+  required int32 uid = 1;
+  optional bytes buf = 2;
+  required string name = 3 [default = ""];
+}

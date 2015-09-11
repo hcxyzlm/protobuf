@@ -1,0 +1,41 @@
+package tutorial;
+
+option java_package = "com.zengame.proto.act.dailyAtt";
+option java_outer_classname = "DailyAttProto";
+option optimize_for = LITE_RUNTIME;
+
+message Req_GetDailyAttStatus {
+  required int32 gameID = 1;
+}
+
+message Ans_GetDailyAttStatus {
+	required int32 gameID = 1;
+  required int32 att = 2;
+  required int32 curKeep = 3;
+  required int32 maxKeep = 4;
+  required int32 time = 5;
+  required int32 canGet = 6;
+  required int32 reserve = 7;
+}
+
+message Req_DoDailyAtt {
+	required int32 gameID = 1;
+  optional int32 day = 2;
+}
+
+message Ans_DoDailyAtt {
+	required int32 gameID = 1;
+  required int32 coins = 2;
+  required int32 points = 3;
+}
+
+message Req_GetKeepDailyAttAward {
+	required int32 gameID = 1;
+  optional int32 index = 2;
+}
+
+message Ans_GetKeepDailyAttAward {
+	required int32 gameID = 1;
+  required int32 keep = 2;
+  required int32 coins = 3;
+}

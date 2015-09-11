@@ -1,0 +1,10 @@
+package tutorial;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.zengame.proto.rsp.user";
+option java_outer_classname = "NewUserNotify";
+
+message NewUserNotifyMsg {
+	required int32 coin = 1;
+	required int32 fare = 2;
+}

@@ -1,0 +1,12 @@
+package proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.zengame.proto.rsp.user";
+option java_outer_classname = "Rsp_GetMyTask";
+
+message Rsp_GetMyTaskMsg {
+   required int32 playCount = 1;//总共需要多少局
+   required int32 playCounter = 2;//已经完成多少局
+   required int32 givingCoin = 3;//将会奖励多少
+   required int32 givingFare = 4;//将会奖励话费多少
+}

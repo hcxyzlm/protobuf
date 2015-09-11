@@ -1,0 +1,91 @@
+package tutorial;
+
+option java_package = "com.zengame.proto.game.bullfight";
+option java_outer_classname = "BullFightProto";
+option optimize_for = LITE_RUNTIME;
+
+message Ans_OnEnterGame {
+	repeated Ans_SeatInfo infolist = 1;
+	required int32 tableStatus = 2;
+	required int32 curSpeak = 3;
+	optional int32 bankerUserID = 4 [default = -1];
+}
+
+message Ans_SeatInfo {
+	required int32 userID = 1;
+	required int32 seatID = 2;
+	repeated int32 pockers = 3;
+	optional int32 bet = 4;
+  optional int32 status = 5;
+  optional int32 statusVal = 6 [default = -1];
+}
+
+message Req_PlayerReady{
+
+}
+
+message Ans_PlayerReady{
+	required int32 userID = 1;	
+}
+
+message Ans_NotifyAllToSpeak {
+	required int32 actID = 1;
+}
+
+message Req_SnatchBanker{
+	required int32 sign = 1;	
+}
+
+message Ans_SnatchBanker{
+	required int32 userID = 1;
+	required int32 sign = 2;
+}
+
+message Req_GiveupBanker{
+
+}
+
+message Ans_StartBet{
+	required int32 bankerUserID = 1;
+}
+
+message Req_PlayerBet{
+	required int32 bet = 1;
+}
+
+message Ans_PlayerBet{
+	required int32 userID = 1;
+	required int32 bet = 2;
+}
+
+message Ans_DealPocker{
+	repeated Ans_SeatPocker pockerArr = 1;
+}
+
+message Ans_SeatPocker{
+	required int32 userID = 1;
+	repeated int32 pockers = 2;
+}
+
+message Req_PlayerCutCard{
+	repeated int32 pockers = 1;
+}
+
+message Ans_PlayerCutCard{
+	required int32 userID = 1;
+	repeated int32 pockers = 2;
+	optional int32 cardtype = 3;
+}
+
+message Ans_GameResult{
+    repeated ResultInfo retlists = 1;
+}
+
+message ResultInfo{
+	required int32 userID = 1;
+	required int32 win = 2;
+	optional int32 cardtype = 3;
+}
+
+
+

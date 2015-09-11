@@ -1,0 +1,99 @@
+﻿package zhajinhua;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.zengame.proto.game.zhajinhua";
+
+message Ans_OnEnterGame {
+	repeated Ans_SeatInfo infolist = 1;//用户信息
+	required int32 tableStatus = 2;//当前桌子状态
+	required int32 TotalMoney=3;//桌面上总共多少钱
+	required int32 CurSpeak=4; //当前谁操作
+	required int32 CurRound=5; //当前第几轮
+}
+
+message Ans_SeatInfo {
+	required int32 userID = 1;
+	required int32 seatID = 2;
+	required int32 bet = 3;//下注多少
+ 	required int32 status = 4;//当前状态bit2:ready bit1:弃牌1，bit0:1看牌，0暗牌
+  	repeated int32 pokers = 5;//牌
+}
+
+
+
+message Req_Bet{     //下注
+	required int32 flat =1;  // 0下注 1加注
+	optional int32 betCount=2; //下注额（加注时有用）
+}
+message Ans_Bet{     //
+	required int32 seatid=1;
+	required int32 flat =2;  //0 下注 1加注 2下底注
+	required int32 betCount=3; //下注额
+	required int32 money=4;//玩家总下注额
+	required int32 TotalMoney=5;//当前桌子总下注额
+}
+
+
+message Req_OpenPoker{     //看牌
+}
+message Ans_OpenPoker{     //看牌
+	required int32 seatid=1;
+	repeated int32 pokers=2;
+}
+
+
+message Req_CompairPoker{     //比牌
+	required int32 ObjSeatid=1;//目标id
+}
+message Ans_CompairPoker{     //比牌
+	required int32 seatID =1;
+	required int32 ObjSeatid=2;//目标id
+	required int32 winner=3;//比牌赢的玩家id
+}
+
+
+message AbandonPoker{     //弃牌
+	optional int32 seatid=1;
+}
+
+
+
+message Ans_Result{//结算
+	repeated ResultInfo resultinfo =1;
+	required int32 seatID =2;         //赢的玩家的座位
+	required int32 pokerType=3;//赢的玩家的牌型
+	required PokerInfo pokers=4;//赢的玩家的牌
+}
+message ResultInfo{
+	required int32 seatID=1;
+	required int32 winCount=2;//赢多少钱	
+}
+//cmd1002 发牌   //cmd1008 结算可以看的玩家的牌
+message Ans_SendPoker{//发牌
+	repeated PokerInfo Poker=1;
+}
+
+message PokerInfo{
+	required int32 seatID=1; //发给谁
+	repeated int32 poker=2;  //发了什么牌 可以多张
+}
+
+message Ans_NotifySpeak{//通知玩家说话
+	required int32 seatID =1;
+	required int32 totalTimes=2;//倒计时总时间
+	required int32 CurStatus=3;//当前可以操作的内容
+	required int32 CurRound=4;//当前可以操作的内容
+}
+
+message Ans_NotifyReady{//通知某位置玩家已准备
+	required int32 seatID = 1;
+}
+
+message Ans_ReadyPlayer{
+	required int32 readySeatID = 1; //
+}
+message Req_Ready{//某位置玩家准备
+
+}
+
+

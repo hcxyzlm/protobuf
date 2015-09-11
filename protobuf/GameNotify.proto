@@ -1,0 +1,14 @@
+package tutorial;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.zengame.proto.rsp.notify";
+option java_outer_classname = "GameNotify";
+
+//通知,系统消息, 走马灯
+message GameNotifyMsg {
+  required int32 type = 1;//通知类型
+  required int32 subtype = 2;	//通知子类型
+  required int32 sendtype = 3;	//传输类型
+  optional string msg = 4;//通知内容
+  repeated string param = 5;//内容参数
+}

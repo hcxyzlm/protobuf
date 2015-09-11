@@ -1,0 +1,119 @@
+package baijiale;
+
+
+message Ans_OnEnterGame {
+	repeated Ans_SeatInfo infolist = 1;
+	required int32 tableStatus = 2;
+	repeated int32 MaxShowPaper=3;
+	repeated int32 MinShowPaper=4;
+	required int32 NextStartTime =5;
+	required int32 PlayerUserID = 6;
+	required int32 bankerUserID = 7;
+	required int32 PokerLeft = 8;
+}
+
+message Ans_SeatInfo {
+	required int32 userID = 1;
+	required int32 seatID = 2;
+	repeated int32 pokers = 3;
+	repeated int32 bet = 4;
+  	required int32 status = 5;
+}
+message Ans_NotifyBet{//通知玩家开始下注
+	required int32 Actionid=1;
+	repeated int32 seatID =2;
+	required int32 times =3;
+	required int32 totalTimes=4;
+}
+
+message Ans_PartPoker{          //通知切牌
+	required int32 seatID=1;
+	required int32 Poker=2;
+	required int32 totalcard=3;
+}
+message Ans_StartGame{          //
+	required int32 bankerSeatID=1;
+	required int32 playerSeatID=2;
+}
+message Ans_NoticeSeePoker{//通知看牌
+	required int32 seatID= 1;//谁看牌
+	required int32 TargetID= 2;//看谁的牌
+}
+message Ans_SendPoker{//发牌
+	repeated PokerInfo Poker=1;
+}
+message PokerInfo{
+	required int32 seatID=1; //发给谁
+	repeated int32 poker=2;  //发了什么牌 可以多张
+}
+
+
+message Req_UserAction{     //玩家操作
+	required int32 seatID =1;
+	required int32 flat   =2;  //下注 清除下注 重复下注 看牌中 看牌结束 各种操作
+	optional int32 Playerseatid=3;   //闲家
+	optional int32 Bankerseatid=4;   //庄家
+	optional int32 SeePoker =5;
+	optional int32 movex=6;
+	optional int32 movey=7;	
+	optional int32 state=8;	       //看完一张牌
+	optional BetInfo betinfo=9;   //下注信息
+}
+
+message Ans_UserAction{     //动作通知
+	required int32 seatID=1;//玩家座位
+	required int32 flat =2;//变化的操作
+	optional int32 Playerseatid=3;   //闲家
+	optional int32 Bankerseatid=4;   //庄家
+	optional int32 SeePoker =5;
+	optional int32 movex=6;
+	optional int32 movey=7;	
+	optional int32 state=8;	       //看完一张牌
+	optional BetInfo betinfo=9;   //下注信息
+}
+
+message BetInfo{//下注信息
+	required int32 totalbet =1;
+	required int32 bet    =2;      // 下注额是多少
+	required int32 betFlat    =3;  //如果是下注 下给谁了
+}
+message SeePoker{  //看牌信息
+	required int32 flat =5;
+	required int32 movex=6;
+	required int32 movey=7;	
+}
+
+message Ans_FirstResult{//第一轮结算
+	repeated FirstResultInfo resultinfo =1;
+}
+message FirstResultInfo{
+	required int32 seatid=1;
+	required int32 totalWin=2;
+	repeated resultBet betcount=3;
+}
+
+message resultBet{//下注信息
+	required int32 winbet=1;
+	required int32 bet    =2;      // 下注额是多少
+	required int32 betFlat    =3;  //如果是下注 下给谁了
+}
+message Ans_Result{//结算
+	repeated ResultInfo resultinfo =1;
+	repeated int32 MaxPaperInfo = 2;    //大路纸
+}
+message ResultInfo{
+	required int32 seatID=1;
+	required int32 win =2;         //输赢
+	required int32 betcount=3;      //下注多少
+	required int32 winbet=4;      //赢多少
+	required int32 betflat =5;
+	repeated int32 MinPaperInfo = 6;    //小路纸
+}
+message Ans_ShowPaper{                     //路纸
+    	
+}
+message ShowPaperInfo {
+   	required int32 x = 1;
+ 	required int32 y = 2;
+ 	required int32 Result = 3;
+}
